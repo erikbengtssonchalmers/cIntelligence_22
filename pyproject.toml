@@ -2,13 +2,12 @@
 name = "cintelligence-22"
 version = "0.1.0"
 description = ""
-authors = ["erikbengtsson <eribeng@student.chalmers.se>"]
+authors = ["Your Name <you@example.com>"]
 readme = "README.md"
-packages = [{include = "cintelligence_22"}]
+packages = []
 
 [tool.poetry.dependencies]
 python = "^3.9"
-jupyter = "^1.0.0"
 pandas = "^1.5.0"
 
 
