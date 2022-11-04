@@ -2,24 +2,8 @@ import random
 import logging
 from pprint import pprint
 
-"""
 
-- Generate an initial population of individuals randomly.
-- Evaluate the fitness of each individual in the population.
-
-- Repeat as often as you like:
-    a) Select individuals with a good fitness score for reproduction.
-    b) Let them produce offspring.
-    c) Mutate these offspring.
-    d) Evaluate the fitness of each individual in the population.
-    f) Let the individuals with a bad fitness score die.
-
-(We're finished...)
-- Pick the individual with the highest fitness as the solution.
-
-"""
-
-N = 10
+N = 50
 NR_OF_GENERATIONS = 1000
 POPULATION_SIZE = 50
 OFFSPRING_SIZE = 20
@@ -50,7 +34,6 @@ def goal_check(curr):
 
 def fitness_function(entry, goal_set):
     duplicates = len(entry) - len(set(tuple(entry)))
-    #missing_elements = N - len(set(entry))
     miss = len(goal_set.difference(set(entry)))
     return (-1000 * miss) - duplicates
 
@@ -62,8 +45,6 @@ def calculate_fitness(individual):
 
 
 def select_parents(population):
-    fitness_sum = sum(x[1] for x in population)
-    # TODO: link to where this was found...
     nr_of_boxes = int(POPULATION_SIZE * (POPULATION_SIZE + 1) / 2)
     random.seed(None)
     random_wheel_nr = random.randint(1, nr_of_boxes)
@@ -131,7 +112,7 @@ def main():
         current_individuals = update_population(current_individuals, cross_over_list)
         counter += 1
 
-    logging.info(f'Best individual: {current_individuals[0]}')
+    logging.info(f'Best solution for N={N} was {current_individuals[0][0]} with a weight of {sum(len(_) for _ in current_individuals[0][0])}')
 
 
 if __name__ == "__main__":
