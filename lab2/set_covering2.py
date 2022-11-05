@@ -1,9 +1,8 @@
 import random
 import logging
-from pprint import pprint
 
 
-N = 50
+N = 1000
 NR_OF_GENERATIONS = 1000
 POPULATION_SIZE = 50
 OFFSPRING_SIZE = 20
@@ -29,6 +28,7 @@ def select_rand_solution(full_input):
 
 # check if one solution is valid
 def goal_check(curr):
+    curr = [item for sublist in curr for item in sublist]
     return set(curr) == set(range(N))
 
 
@@ -112,7 +112,11 @@ def main():
         current_individuals = update_population(current_individuals, cross_over_list)
         counter += 1
 
-    logging.info(f'Best solution for N={N} was {current_individuals[0][0]} with a weight of {sum(len(_) for _ in current_individuals[0][0])}')
+    for solution in current_individuals:
+        if goal_check(solution[0]):
+            logging.info(f'Best solution for N={N} was {current_individuals[0][0]} \nWith a weight of {sum(len(_) for _ in current_individuals[0][0])}')
+            break
+
 
 
 if __name__ == "__main__":

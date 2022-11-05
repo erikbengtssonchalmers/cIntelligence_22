@@ -1,9 +1,11 @@
 ### Lab 2 solution 
 
 
-This is an attempt for submission to lab2 using a generic algorithm
+This is an attempt for submission to lab2 using a generic algorithm.
 
-It's based on the following approach:
+
+
+It's based on the following approach from the following source and materials:
 
 - Generate an initial population of individuals randomly.
 - Evaluate the fitness of each individual in the population.
@@ -16,9 +18,10 @@ It's based on the following approach:
 
 - Pick the individual with the highest fitness as the solution.
 
-The alogorithm is not performing well at all at the moment and I will probably not have the time to improve
+The algorithm is not performing well at all at the moment and I will probably not have the time to improve
+the current solution. However, by experimenting with the variables it would probably be 
 
-Some discussions about solutions and tweak of variables has been made with
+Some discussions about possible approaches and solutions and tweak of variables has been made with
 
 - Karl Wennerström
 - Angelica Ferlin
@@ -34,10 +37,10 @@ Calculated from 10 runs with each N with the following settings:
 - OFFSPRING_SIZE = 20
 
 
-| N    | Best | Worst |
-|------|:----:|------:|
-| 5    |  5   |     7 |
-| 10   |  12  |    16 |
-| 50   | 115  |   284 |
-| 500  |      |       |
-| 1000 |      |       |
+| N    | Best |  Worst |
+|------|:----:|-------:|
+| 5    |  5   |      7 |
+| 10   |  12  |     16 |
+| 50   | 115  |    284 |
+| 500  | 1610 |   9016 |
+| 1000 | 3948 | 22 441 |
