@@ -1,9 +1,8 @@
 ### Lab 2 solution 
 
 
-This is an attempt for submission to lab2 using a generic algorithm.
-
-
+This is an attempt for submission to lab2 using a generic algorithm. Due to lack
+of time solution needs more work to function properly... TODO next week.
 
 It's based on the following approach from the following source and materials:
 
