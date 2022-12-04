@@ -2,8 +2,9 @@ import logging
 import random
 from itertools import accumulate
 from operator import xor
-from collections import namedtuple
 from copy import deepcopy
+from collections import namedtuple
+
 
 Nimply = namedtuple("Nimply", "row, num_objects")
 
@@ -32,6 +33,77 @@ class Nim:
         assert self._rows[row] >= num_objects
         assert self._k is None or num_objects <= self._k
         self._rows[row] -= num_objects
+
+
+class Strategy:
+    """
+        Abstract strategy class, defines move interface for specific implementations
+    """
+
+    def __init__(self):
+        pass
+
+    """
+        Abstract method to be implemented in subclasses
+    """
+
+    def move(self, move, parameters):
+        pass
+
+
+class OneRowLeft(Strategy):
+    """
+        Strategy to use to win the game when the game only consists x units on one single row
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def move(self, move, parameters):
+        print('movin with rule 1')
+        return Nimply(move[0], move[1])
+
+
+class RandRule(Strategy):
+    """
+        Strategy to use to win the game when the game only consists x units on one single row
+    """
+
+    def __init__(self):
+        super().__init__()
+
+    def move(self, move, parameters):
+        print('im moving with a random strategy')
+        return Nimply(move[0], move[1])
+
+
+class Gene:
+    def __init__(self):
+        self.parameters = self.populate()
+        self.strategy = RandRule()
+
+
+    def populate(self):
+        """
+            key : strategy name
+            value : how many objects to leave on each row
+        """
+        parameters = {'one_row_left': random.randint(1, NR_OF_ROWS),
+                      'one_row_to_win': random.randint(1, NR_OF_ROWS)}
+        return parameters
+
+    def set_strategy(self, new_strategy):
+        """
+            setter for strategy method
+            :param new_strategy: Callable, strategy to execute when calling execute()
+        """
+        self.strategy = new_strategy
+
+    def execute(self, move):
+        """
+            Call depending on dynamic "configuration", we execute move using a strategy. Default random.
+        """
+        return self.strategy.move(move, self.parameters)
 
 
 def nim_sum(state: Nim) -> int:
@@ -115,11 +187,16 @@ def evaluate_game(state, gene):
 
     # TODO: FIX TO NOT TAKE TO MANY BRICKS
     if game_dict['active_rows_number'] == 1:
-        move = game_dict['last_row']
+        move = (game_dict['last_row'], gene.parameters['one_row_left'])
+        #tmp = [(1,2), (2,6), (5,4)]
+        #test = max(tmp, key=lambda i: i[1])
+        biggest_move = max(game_dict['possible_moves'], key=lambda i: i[1])
+        if biggest_move[1] < gene.parameters['one_row_left']:
+            move = (game_dict['last_row'], biggest_move[1])
         gene.set_strategy(OneRowLeft())
-        ply = gene.execute(move)
-        return ply
-    #elif game_dict['active_rows_number'] == 2:
+        return gene.execute(move)
+
+    # elif game_dict['active_rows_number'] == 2:
     #    pass
     else:
         move = game_dict['possible_moves'][random.randint(0, len(game_dict['possible_moves']) - 1)]
@@ -127,78 +204,6 @@ def evaluate_game(state, gene):
         ply = gene.execute(move)
         return ply
 
-
-class Gene:
-    def __init__(self):
-        self.parameters = self.populate()
-        self.strategy = RandRule()
-
-    def populate(self):
-        """
-            key : strategy name
-            value : how many objects to leave on each row
-        """
-        parameters = {'one_row_left': random.randint(1, NR_OF_ROWS),
-                      'one_row_to_win': random.randint(1, NR_OF_ROWS)}
-        return parameters
-
-    def set_strategy(self, new_strategy):
-        """
-            setter for strategy method
-            :param new_strategy: Callable, strategy to execute when calling execute()
-        """
-        self.strategy = new_strategy
-
-    def execute(self, move):
-        """
-            Call depending on dynamic "configuration", we execute move using a strategy. Default random.
-        """
-        return self.strategy.move(move, self.parameters)
-
-
-class Strategy:
-    """
-        Abstract strategy class, defines move interface for specific implementations
-    """
-
-    def __init__(self):
-        pass
-
-    """
-        Abstract method to be implemented in subclasses
-    """
-
-    def move(self, move, parameters):
-        pass
-
-
-class OneRowLeft(Strategy):
-    """
-        Strategy to use to win the game when the game only consists x units on one single row
-    """
-
-    def __init__(self):
-        super().__init__()
-
-    def move(self, move, parameters):
-        print('movin with rule 1')
-        # make implementation and return Nimply
-        ply = Nimply(move, parameters['one_row_left'])
-        return ply
-
-
-class RandRule(Strategy):
-    """
-        Strategy to use to win the game when the game only consists x units on one single row
-    """
-
-    def __init__(self):
-        super().__init__()
-
-    def move(self, move, parameters):
-        print('im moving with a random strategy')
-        ply = Nimply(move[0], move[1])
-        return ply
 
 
 game = Nim(NR_OF_ROWS)
