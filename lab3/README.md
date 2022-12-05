@@ -1,6 +1,6 @@
 #### Lab 3.1 and 3.2
 
-The lab has been implemented by myself, but a lot of concepts and rulas has been discussed together with Karl Wennerström.
+The lab has been implemented by myself, but a lot of concepts and rulas has been discussed together with Karl Wennerström, also some discussions with Angelica Ferlin.
 
 I've also been using code provided by the professor during the lectures, mainly for part 3.1.
 
