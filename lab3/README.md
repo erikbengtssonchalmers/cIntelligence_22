@@ -50,4 +50,7 @@ Should also be less random which opponent to face. A gene could be able to try i
 
 ### 3.3 An agent using minmax
 
+Currently, the minmax agent can win against the optimal strategy if it can play first with 4 rows. Since the complexity of the algorithm is high, I've only managed to play
+using max 5 rows in the game if mmy agent doesn't start.
+
 ### 3.4 An agent using reinforcement learning
