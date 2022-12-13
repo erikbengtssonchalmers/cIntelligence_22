@@ -1,6 +1,13 @@
 #### Lab 3.1 and 3.2
 
-The lab has been implemented by myself, but a lot of concepts and rulas has been discussed together with Karl Wennerström, also some discussions with Angelica Ferlin.
+The lab has been implemented by myself, but a lot of concepts and rules has been discussed together with Karl Wennerström, especially for parts 3.1-3.3.
+
+The last part has been made in collaboration with Karl Wennerström, Angelica Ferlin, Leonor Gomes and Mathias Schmeckel.
+
+Also with the use of following articles and github-repos:
+- [Wiki](https://en.wikipedia.org/wiki/Q-learning)
+- [Github](https://github.com/abelmariam/nimPy)
+- 
 
 I've also been using code provided by the professor during the lectures, mainly for part 3.1.
 
@@ -11,6 +18,11 @@ The player taking the last object wins.
 - Task 3.2: An agent using evolved rules
 - Task 3.3: An agent using minmax
 - Task 3.4: An agent using reinforcement learning
+
+
+To run any of the parts, uncomment the function calls in the main() function.
+
+
 
 ### 3.1 - Expert system
 
@@ -57,5 +69,7 @@ couple of days.
 
 
 ### 3.4 An agent using reinforcement learning
-NOT YET IMPLEMENTED, TODO DO NOT REVIEW
+The agent uses a q-learning approach to be able to in each visited state based remember good resp. bad moves. The Agent class is
+design to be able to play using the original game loop used by agents in previous tasks.
 
+TODO: write more...

@@ -503,7 +503,7 @@ def play_with_q_learning():
     wins = 0
     played = 0
     for _ in range(100_000):
-        opponent = Agent(RandRule())
+        opponent = Agent(NimSumStrategy())
         winner, loser = play_nim_game(Nim(3), agent1=ai_bot, agent2=opponent)
         if type(winner) is LearningAgent:
             wins += 1
