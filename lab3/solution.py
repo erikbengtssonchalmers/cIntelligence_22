@@ -3,7 +3,7 @@ from itertools import accumulate
 from operator import xor
 from copy import deepcopy
 from collections import namedtuple
-from tqdm import tqdm
+import numpy as np
 
 # Some global variables used to control population and game
 POPULATION_SIZE = 100
@@ -119,6 +119,14 @@ class Strategy:
         pass
 
 
+class QLearning(Strategy):
+    def __init__(self):
+        super().__init__()
+
+    def move(self, move, parameters):
+        return None
+
+
 class OneRowLeft(Strategy):
     """
         Strategy to leave x tiles in game when only one row is left
@@ -182,6 +190,7 @@ class BestMoveStrategy(Strategy):
     """
         Strategy using minmax to minimize the opponents maximal win.
     """
+
     def __init__(self):
         super().__init__()
 
@@ -262,7 +271,7 @@ def play_nim_game(game_nim, agent1, agent2):
     index = 0
     print(f'initial state: {game_nim}')
     while game_nim:
-        ply = evaluate_game(game_nim, players[index])
+        ply = evaluate_game(deepcopy(game_nim), players[index])
         game_nim.nimming(ply)
         print(f'Board after player: {index}\'s move: {game_nim}')
         index = 1 - index
@@ -277,6 +286,10 @@ def evaluate_game(state, gene):
         get information from game and call strategies
     """
     game_dict = cook_status(state)
+
+    if type(gene) is LearningAgent:
+        move = gene.execute(state)
+        return move
 
     # fix so that it's easy to face both random and nim sum strategies, needs refactor.
     if type(gene) is Agent:
@@ -382,7 +395,7 @@ def evolutionary_strategy():
     for _ in range(POPULATION_SIZE):
         population.append(Gene())
 
-    for _ in tqdm(range(NR_OF_GENERATIONS)):
+    for _ in range(NR_OF_GENERATIONS):
         # play games with genes vs genes (not facing each other) and save score.
         for gene in population:
             k = 0
@@ -404,7 +417,103 @@ def evolutionary_strategy():
 
 
 def play_game_with_minmax():
-    play_nim_game(Nim(5), agent1=Agent(BestMoveStrategy()), agent2=Agent(NimSumStrategy()))
+    play_nim_game(Nim(4), agent1=Agent(BestMoveStrategy()), agent2=Agent(NimSumStrategy()))
+
+
+class LearningAgent:
+    """
+    TO BE USED FOR REINFORCEMENT LEARNING (Q learning).
+
+    """
+
+    def __init__(self, exploration_treshold, learning_rate, disc_rate):
+        self.q = {}  # holds a state and its values
+        self.strategy = QLearning()
+        self.previous_move = None
+        self.previous_state = None
+        self.exploration_treshold = exploration_treshold
+        self.learning_rate = learning_rate
+        self.discount_rate = disc_rate
+        self.PENALTY = -1
+        self.REWARD = 1
+
+    def reset_moves(self):
+        self.previous_move = None
+        self.previous_move = None
+
+    def add_moves(self, state, possible_moves):
+        for move in possible_moves:
+            if state.rows not in self.q.keys():
+                self.q[state.rows] = {}
+            if move not in self.q[state.rows].keys():
+                self.q[state.rows][move] = np.random.uniform(0.0, 0.01)
+
+    def best_move(self, state, possible_moves):
+        curr_max = 0
+        best_move = None
+        for m in self.q[state.rows].keys():
+            if self.q[state.rows][m] > curr_max and m in possible_moves:
+                best_move = m
+                curr_max = self.q[state.rows][m]
+        if not best_move:
+            return possible_moves[0]
+        return best_move
+
+    def policy(self, state, possible_moves):
+        rand = np.random.random()
+        if rand >= self.exploration_treshold:
+            if len(possible_moves) == 1:
+                return possible_moves[0]
+            else:
+                return self.best_move(state, possible_moves)
+        else:
+            rand = random.sample(possible_moves, 1)[0]
+            return rand
+
+    def update_q(self, state, data):
+        # game is not over
+        move = self.policy(state, data)
+
+        if self.previous_move:
+            # it's not the first move of the game
+            next_state = deepcopy(state)
+            next_state.nimming(Nimply(move[0], move[1]))
+            reward = 1 if next_state is None else 0
+
+            max_val = max([self.q[state.rows][move] for move in data])
+
+            # update q value according to algorithm
+            self.q[self.previous_state.rows][self.previous_move] += self.learning_rate * ((reward + self.discount_rate) * (max_val - self.q[self.previous_state.rows][self.previous_move]))
+        self.previous_state = state
+        self.previous_move = move
+        return move
+
+    def react_on_loss(self):
+        self.q[self.previous_state.rows][self.previous_move] += self.learning_rate * (self.PENALTY - self.q[self.previous_state.rows][self.previous_move])
+
+    def execute(self, state):
+        data = cook_status(state)
+        self.add_moves(state, data['possible_moves'])
+        move = self.update_q(state, data['possible_moves'])
+        return Nimply(move[0], move[1])
+
+
+def play_with_q_learning():
+    ai_bot = LearningAgent(exploration_treshold=0.1, learning_rate=0.4, disc_rate=0.6)
+    wins = 0
+    played = 0
+    for _ in range(100_000):
+        opponent = Agent(RandRule())
+        winner, loser = play_nim_game(Nim(3), agent1=ai_bot, agent2=opponent)
+        if type(winner) is LearningAgent:
+            wins += 1
+        else:
+            ai_bot.react_on_loss()
+        played += 1
+        ai_bot.reset_moves()
+    print(wins/played)
+    print(ai_bot.__dict__)
+
 
 
 
@@ -416,7 +525,10 @@ def main():
     # evolutionary_strategy()
 
     # uncomment to run part 3.3
-    play_game_with_minmax()
+    # play_game_with_minmax()
+
+    # part 3.4
+    play_with_q_learning()
 
 
 if __name__ == "__main__":
