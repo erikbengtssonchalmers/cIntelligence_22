@@ -70,6 +70,24 @@ couple of days.
 
 ### 3.4 An agent using reinforcement learning
 The agent uses a q-learning approach to be able to in each visited state based remember good resp. bad moves. The Agent class is
-design to be able to play using the original game loop used by agents in previous tasks.
+design to be able to play using the original game loop designed to fit other types of agents.
 
-TODO: write more...
+The Q-learning approach is based on the reward/punishment and trying to figure out what moves led to a certain outcome. The agent each 
+turn receives a copy of the stat and store the state in its q-table together with all possible moves and their score (initially close to zero)
+Then the policy of the agent uses decides how a move is going to be chosen. Since the agent doesn't have all possible states and moves stored
+from the beginning, it has to explore (randomize moves) with a small probability to not risk to exclude some moves. With currently 90%
+probability, it returns the move with the highest score from the q-table.
+
+The agent then tries to figure out how good the move is by simulating one step ahead. If next state results in a win - the moves gets rewarded but if the
+agent should lose, instead it gets punished.
+
+The reward is calculated by the [Q-learning algorithm](https://en.wikipedia.org/wiki/Q-learning#Algorithm) using the params that are set when creating 
+the instance of the learning agent.
+
+The agent then plays 10 000 games against different opponents, the better the opponent the more matches the agent gets against that opponent. The agent is
+not done with it's training when it plays it's first match, which would have been another approach to achieve the best possible win rate.
+
+
+
+
+

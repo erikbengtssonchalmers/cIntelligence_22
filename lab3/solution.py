@@ -483,13 +483,23 @@ class LearningAgent:
             max_val = max([self.q[state.rows][move] for move in data])
 
             # update q value according to algorithm
-            self.q[self.previous_state.rows][self.previous_move] += self.learning_rate * ((reward + self.discount_rate) * (max_val - self.q[self.previous_state.rows][self.previous_move]))
+            self.q[self.previous_state.rows][self.previous_move] += self.learning_rate * (
+                        (reward + self.discount_rate) * (
+                            max_val - self.q[self.previous_state.rows][self.previous_move]))
         self.previous_state = state
         self.previous_move = move
         return move
 
     def react_on_loss(self):
-        self.q[self.previous_state.rows][self.previous_move] += self.learning_rate * (self.PENALTY - self.q[self.previous_state.rows][self.previous_move])
+        self.q[self.previous_state.rows][self.previous_move] += self.learning_rate * (
+                    self.PENALTY - self.q[self.previous_state.rows][self.previous_move])
+
+    def lower_learning_rate(self):
+        if self.learning_rate - 0.0005 >= 0.1:
+            self.learning_rate -= 0.0005
+        else:
+            self.learning_rate = 0.1
+
 
     def execute(self, state):
         data = cook_status(state)
@@ -499,22 +509,26 @@ class LearningAgent:
 
 
 def play_with_q_learning():
-    ai_bot = LearningAgent(exploration_treshold=0.1, learning_rate=0.4, disc_rate=0.6)
+    nr_of_games = 1000
+    q_agent = LearningAgent(exploration_treshold=0.1, learning_rate=0.4, disc_rate=0.6)
+    opponents = [Agent(RandRule()), Gene(), Agent(NimSumStrategy())]
     wins = 0
     played = 0
+    indx = 0
     for _ in range(100_000):
-        opponent = Agent(NimSumStrategy())
-        winner, loser = play_nim_game(Nim(3), agent1=ai_bot, agent2=opponent)
+        opponent = opponents[indx]
+        winner, loser = play_nim_game(Nim(3), agent1=q_agent, agent2=opponent)
         if type(winner) is LearningAgent:
             wins += 1
         else:
-            ai_bot.react_on_loss()
+            q_agent.react_on_loss()
         played += 1
-        ai_bot.reset_moves()
-    print(wins/played)
-    print(ai_bot.__dict__)
-
-
+        q_agent.reset_moves()
+        print(opponent.__dict__)
+        if played == 100 or played == 35000:
+            indx += 1
+    print(wins / played)
+    print(q_agent.__dict__)
 
 
 def main():
@@ -528,8 +542,8 @@ def main():
     # play_game_with_minmax()
 
     # part 3.4
-    play_with_q_learning()
-
+    # play_with_q_learning()
+    pass
 
 if __name__ == "__main__":
     main()
